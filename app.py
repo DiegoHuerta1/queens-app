@@ -20,10 +20,11 @@ num_queens = st.sidebar.number_input(
     min(n, m)
 )
 
-mode = st.sidebar.selectbox(
+mode_name = st.sidebar.selectbox(
     "Board type",
-    list(BoardMode)
+    [mode.name for mode in BoardMode]
 )
+mode = BoardMode[mode_name]
 
 num_show = st.sidebar.number_input(
     "Number of solutions to display",
