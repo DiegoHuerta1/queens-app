@@ -105,19 +105,48 @@ class Torus_Board(Classic_Board):
         return set(squares)
     
 
+def reflect(n: int, x: int) -> int:
+    """   
+    Given n elements, reflect the element x in {0, ..., n-1}
+    """
+    return n - x - 1
+
+
 class Klein1_Board(Classic_Board):
     """ Only twist the horizontal fold"""
 
+    def move_right(self, square: Square) -> Square:
+        a, b = square
+        # Edge case
+        if b == (self.m - 1):
+            return (reflect(self.n, a), 0)
+        # Just move right
+        else:
+            return (a, b+1)
+
+    def move_left(self, square: Square) -> Square:
+        a, b = square
+        # Edge case
+        if b == 0:
+            return (reflect(self.n, a), self.m - 1)
+        # Just move left
+        else:
+            return (a, b-1)
+    
+    def move_up(self, square: Square) -> Square:
+        a, b = square
+        new_a = (a +1) % self.n
+        return (new_a, b)
+
     def move_diagonal_right(self, square: Square) -> Square:
         " Move into the right diagonal "
-        a, b = square
-        new_a = (a + 1) % self.n
-        new_b = (b + 1) % self.m
-        return ( new_a,  new_b)
+        square = self.move_right(square)
+        return self.move_up(square)
     
     def move_diagonal_left(self, square: Square) -> Square:
         " Move into the left diagonal "
-        return ( (square[0] + 1) % self.n, (square[1] - 1) % self.m )
+        square = self.move_left(square)
+        return self.move_up(square)
 
     def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
         """  Compute the squares blocked by a queen in a torus """
@@ -126,9 +155,15 @@ class Klein1_Board(Classic_Board):
         # Block the rest of the row
         for i in range(b+1, self.m):
             squares.append( (a, i) )
+        # Block the reflected row
+        a_star = reflect(self.n, a)
+        for i in range(self.m):
+            squares.append( (a_star, i))
+
         # Block the rest of the column
         for j in range(a+1, self.n):
             squares.append( (j, b) )
+
         # Block the rigth diagonal
         square_diag = self.move_diagonal_right(queen)
         while square_diag != queen:
@@ -142,11 +177,78 @@ class Klein1_Board(Classic_Board):
         return set(squares)
     
 
-class Klein2_Board(Classic_Board):
-    def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
-        """  Compute the squares blocked by a queen """
-        ...
 
+class Klein2_Board(Classic_Board):
+    """ Twist both fold"""
+
+    def move_right(self, square: Square) -> Square:
+        a, b = square
+        # Edge case
+        if b == (self.m - 1):
+            return (reflect(self.n, a), 0)
+        # Just move right
+        else:
+            return (a, b+1)
+
+    def move_left(self, square: Square) -> Square:
+        a, b = square
+        # Edge case
+        if b == 0:
+            return (reflect(self.n, a), self.m - 1)
+        # Just move left
+        else:
+            return (a, b-1)
+    
+    def move_up(self, square: Square) -> Square:
+        a, b = square
+        # Edge case
+        if a == (self.n - 1):
+            return (0, reflect(self.m, b))
+        # Just move up
+        else:
+            return (a + 1, b)
+
+    def move_diagonal_right(self, square: Square) -> Square:
+        " Move into the right diagonal "
+        square = self.move_right(square)
+        return self.move_up(square)
+    
+    def move_diagonal_left(self, square: Square) -> Square:
+        " Move into the left diagonal "
+        square = self.move_left(square)
+        return self.move_up(square)
+
+    def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """  Compute the squares blocked by a queen in a torus """
+        squares: list[Square] = []
+        a, b = queen
+        # Block the rest of the row
+        for i in range(b+1, self.m):
+            squares.append( (a, i) )
+        # Block the reflected row
+        a_star = reflect(self.n, a)
+        for i in range(self.m):
+            squares.append( (a_star, i))
+
+        # Block the rest of the column
+        for j in range(a+1, self.n):
+            squares.append( (j, b) )
+        # Block the reflected column
+        b_star = reflect(self.m, b)
+        for j in range(self.n):
+            squares.append( (j, b_star))
+
+        # Block the rigth diagonal
+        square_diag = self.move_diagonal_right(queen)
+        while square_diag != queen:
+            squares.append( square_diag )
+            square_diag = self.move_diagonal_right(square_diag)
+        # Block the left diagonal
+        square_diag = self.move_diagonal_left(queen)
+        while square_diag != queen:
+            squares.append( square_diag )
+            square_diag = self.move_diagonal_left(square_diag)
+        return set(squares)
 
 class BoardMode(Enum):
     """  
