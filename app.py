@@ -61,4 +61,4 @@ if "solver" in st.session_state:
     for k, sol in enumerate(solutions[:num_show]):
         st.subheader(f"Solution {k+1}")
         fig = solver.plot_solution(sol)
-        st.pyplot(fig, width=False)
+        st.pyplot(fig, width='content')
