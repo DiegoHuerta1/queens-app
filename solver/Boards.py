@@ -110,7 +110,10 @@ class Klein1_Board(Classic_Board):
 
     def move_diagonal_right(self, square: Square) -> Square:
         " Move into the right diagonal "
-        return ( (square[0] + 1) % self.n, (square[1] + 1) % self.m )
+        a, b = square
+        new_a = (a + 1) % self.n
+        new_b = (b + 1) % self.m
+        return ( new_a,  new_b)
     
     def move_diagonal_left(self, square: Square) -> Square:
         " Move into the left diagonal "
