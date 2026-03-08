@@ -44,18 +44,10 @@ if run_solver:
         mode=mode
     )
     solver.solve_problem()
-    st.session_state["solver"] = solver
-    st.session_state["solutions"] = solver.solutions
-    st.session_state["count"] = len(solver.solutions)
-
-
-# show results after running
-if "solver" in st.session_state:
-    solver = st.session_state["solver"]
-    solutions = st.session_state["solutions"]
+    solutions = solver.solutions
 
     # Total count
-    st.write(f"Total solutions: {st.session_state['count']}")
+    st.write(f"Total solutions: {len(solver.solutions)}")
 
     # Individual plots
     for k, sol in enumerate(solutions[:num_show]):
