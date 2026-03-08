@@ -250,6 +250,79 @@ class Klein2_Board(Classic_Board):
             square_diag = self.move_diagonal_left(square_diag)
         return set(squares)
 
+
+class Mobius_Board(Classic_Board):
+    """ Horizontal twist, no vertical fold"""
+
+    def move_right(self, square: Square) -> Square:
+        a, b = square
+        # Edge case
+        if b == (self.m - 1):
+            return (reflect(self.n, a), 0)
+        # Just move right
+        else:
+            return (a, b+1)
+
+    def move_left(self, square: Square) -> Square:
+        a, b = square
+        # Edge case
+        if b == 0:
+            return (reflect(self.n, a), self.m - 1)
+        # Just move left
+        else:
+            return (a, b-1)
+
+    def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """  Compute the squares blocked by a queen in a torus """
+        squares: list[Square] = []
+        a, b = queen
+        # Block the rest of the row
+        for i in range(b+1, self.m):
+            squares.append( (a, i) )
+        # Block the reflected row
+        a_star = reflect(self.n, a)
+        for i in range(self.m):
+            squares.append( (a_star, i))
+
+        # Block the rest of the column
+        for j in range(a+1, self.n):
+            squares.append( (j, b) )
+
+        # Block the upper rigth diagonal
+        i, j = self.move_right(queen)
+        i += 1
+        while i < self.n:
+            squares.append( (i,j) )
+            i, j = self.move_right( (i, j) )
+            i += 1
+        # Block the upper left diagonal
+        i, j = self.move_left(queen)
+        i += 1
+        while i < self.n:
+            squares.append( (i,j) )
+            i, j = self.move_left( (i, j) )
+            i += 1
+
+        # Block the lower rigth diagonal
+        i, j = self.move_right(queen)
+        i -= 1
+        while i >= 0:
+            squares.append( (i,j) )
+            i, j = self.move_right( (i, j) )
+            i -= 1
+        # Block the lower left diagonal
+        i, j = self.move_left(queen)
+        i -= 1
+        while i >= 0:
+            squares.append( (i,j) )
+            i, j = self.move_left( (i, j) )
+            i -= 1
+        
+        return set(squares)
+
+
+
+
 class BoardMode(Enum):
     """  
     Different options of chess boards
@@ -258,3 +331,4 @@ class BoardMode(Enum):
     Torus = Torus_Board
     Klein1 = Klein1_Board
     Klein2 = Klein2_Board
+    Mobius = Mobius_Board
