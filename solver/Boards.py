@@ -71,6 +71,44 @@ class Classic_Board():
             i += 1
             j -= 1
         return set(squares)
+    
+    def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """ Consider all squares for visualizations """
+        squares: list[Square] = []
+        a, b = queen
+        # Block the rest of the row
+        for i in range(self.m):
+            if i != b:
+                squares.append( (a, i) )
+        # Block the rest of the column
+        for j in range(self.n):
+            if j != a:
+                squares.append( (j, b) )
+        # rigth diagonal
+        i, j = a+1, b+1
+        while (i < self.n) and (j < self.m):
+            squares.append( (i,j) )
+            i += 1
+            j += 1
+        # lower right
+        i, j = a-1, b+1
+        while (i >= 0) and (j < self.m):
+            squares.append( (i,j) )
+            i -= 1
+            j += 1
+        # left diagonal
+        i, j = a+1, b-1
+        while (i < self.n) and (j >= 0):
+            squares.append( (i,j) )
+            i += 1
+            j -= 1
+        # lower left
+        i, j = a-1, b-1
+        while (i >= 0) and (j >= 0):
+            squares.append( (i,j) )
+            i -= 1
+            j -= 1
+        return set(squares)
 
 
 class Torus_Board(Classic_Board):
@@ -102,6 +140,12 @@ class Torus_Board(Classic_Board):
         while square_diag != queen:
             squares.append( square_diag )
             square_diag = self.move_diagonal_left(square_diag)
+        return set(squares)
+    
+    def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """ Consider all squares for visualizations """
+        squares: list[Square] = []
+        a, b = queen
         return set(squares)
     
 
@@ -176,6 +220,11 @@ class Klein1_Board(Classic_Board):
             square_diag = self.move_diagonal_left(square_diag)
         return set(squares)
     
+    def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """ Consider all squares for visualizations """
+        squares: list[Square] = []
+        a, b = queen
+        return set(squares)
 
 
 class Klein2_Board(Classic_Board):
@@ -249,6 +298,12 @@ class Klein2_Board(Classic_Board):
             squares.append( square_diag )
             square_diag = self.move_diagonal_left(square_diag)
         return set(squares)
+    
+    def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """ Consider all squares for visualizations """
+        squares: list[Square] = []
+        a, b = queen
+        return set(squares)
 
 
 class Mobius_Board(Classic_Board):
@@ -317,7 +372,12 @@ class Mobius_Board(Classic_Board):
             squares.append( (i,j) )
             i, j = self.move_left( (i, j) )
             i -= 1
-        
+        return set(squares)
+    
+    def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """ Consider all squares for visualizations """
+        squares: list[Square] = []
+        a, b = queen
         return set(squares)
 
 
