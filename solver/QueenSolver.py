@@ -51,12 +51,12 @@ class QueenSolver():
         while (square != self.outside_square) or len(queen_coord) > 0:
             logging.debug(f"Square: {square}")
             
-            # Check if we completed the board
-            if square == self.outside_square:
+            # Check if we completed the board (or the problem)
+            if (square == self.outside_square) or (len(queen_coord)==self.num_queens):
                 logging.debug(f"Board is complete")
 
-                # Check if we have a solution
-                if len(queen_coord) >= self.num_queens:
+                # If we have a solution
+                if len(queen_coord) == self.num_queens:
                     self.solutions.append(queen_coord.copy())
                     logging.debug(f"We have a solution!!")
                     logging.debug(f"\t{queen_coord}")

@@ -103,6 +103,7 @@ def build_board_html(solver, solution, selected_queen_idx=None):
             if is_selected:
                 bg = "#5ab552"
             elif is_attacked:
+                # bg = "#ff7f7f" if is_light else "#e05555"
                 bg = "#ff7f7f" if is_light else "#e05555"
             else:
                 bg = base
@@ -137,16 +138,18 @@ m = st.sidebar.number_input("Columns", 1, 20, 8)
 num_queens = st.sidebar.number_input("Number of queens", 1, max(n, m), min(n, m))
 mode_name = st.sidebar.selectbox("Board type", [mode.name for mode in BoardMode])
 mode = BoardMode[mode_name]
-num_show = st.sidebar.number_input("Number of solutions to display", 1, 20, 5)
+num_show = st.sidebar.number_input("Number of solutions to display", 1, 200, 20)
 run_solver = st.sidebar.button("Solve")
 
 if run_solver:
     solver = QueenSolver(n=n, m=m, num_queens=num_queens, mode=mode)
     solver.solve_problem()
+    # clean
+    for key in st.session_state.keys():
+        del st.session_state[key]
+    # put results
     st.session_state["solver"] = solver
     st.session_state["solutions"] = solver.solutions
-    for key in [k for k in st.session_state if k.startswith("queen_") or k.startswith("last_click_")]:
-        del st.session_state[key]
 
 # ------------------------------------------------
 # Display solutions
@@ -160,6 +163,7 @@ if "solutions" in st.session_state:
     st.write(f"**Total solutions found:** {len(solutions)}")
     st.caption("🖱️ Click a queen ♛ to highlight attacked squares. Click again to deselect.")
 
+    num_show = min(len(solutions), num_show)
     for k, sol in enumerate(solutions[:num_show]):
         st.subheader(f"Solution {k + 1}")
 

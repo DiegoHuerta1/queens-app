@@ -76,11 +76,11 @@ class Classic_Board():
         """ Consider all squares for visualizations """
         squares: list[Square] = []
         a, b = queen
-        # Block the rest of the row
+        #  row
         for i in range(self.m):
             if i != b:
                 squares.append( (a, i) )
-        # Block the rest of the column
+        # column
         for j in range(self.n):
             if j != a:
                 squares.append( (j, b) )
@@ -146,6 +146,24 @@ class Torus_Board(Classic_Board):
         """ Consider all squares for visualizations """
         squares: list[Square] = []
         a, b = queen
+       #  row
+        for i in range(self.m):
+            if i != b:
+                squares.append( (a, i) )
+        # column
+        for j in range(self.n):
+            if j != a:
+                squares.append( (j, b) )
+        # Block the rigth diagonal
+        square_diag = self.move_diagonal_right(queen)
+        while square_diag != queen:
+            squares.append( square_diag )
+            square_diag = self.move_diagonal_right(square_diag)
+        # Block the left diagonal
+        square_diag = self.move_diagonal_left(queen)
+        while square_diag != queen:
+            squares.append( square_diag )
+            square_diag = self.move_diagonal_left(square_diag)
         return set(squares)
     
 
@@ -156,230 +174,165 @@ def reflect(n: int, x: int) -> int:
     return n - x - 1
 
 
-class Klein1_Board(Classic_Board):
-    """ Only twist the horizontal fold"""
-
-    def move_right(self, square: Square) -> Square:
-        a, b = square
-        # Edge case
-        if b == (self.m - 1):
-            return (reflect(self.n, a), 0)
-        # Just move right
-        else:
-            return (a, b+1)
-
-    def move_left(self, square: Square) -> Square:
-        a, b = square
-        # Edge case
-        if b == 0:
-            return (reflect(self.n, a), self.m - 1)
-        # Just move left
-        else:
-            return (a, b-1)
-    
-    def move_up(self, square: Square) -> Square:
-        a, b = square
-        new_a = (a +1) % self.n
-        return (new_a, b)
-
-    def move_diagonal_right(self, square: Square) -> Square:
-        " Move into the right diagonal "
-        square = self.move_right(square)
-        return self.move_up(square)
-    
-    def move_diagonal_left(self, square: Square) -> Square:
-        " Move into the left diagonal "
-        square = self.move_left(square)
-        return self.move_up(square)
-
-    def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
-        """  Compute the squares blocked by a queen in a torus """
-        squares: list[Square] = []
-        a, b = queen
-        # Block the rest of the row
-        for i in range(b+1, self.m):
-            squares.append( (a, i) )
-        # Block the reflected row
-        a_star = reflect(self.n, a)
-        for i in range(self.m):
-            squares.append( (a_star, i))
-
-        # Block the rest of the column
-        for j in range(a+1, self.n):
-            squares.append( (j, b) )
-
-        # Block the rigth diagonal
-        square_diag = self.move_diagonal_right(queen)
-        while square_diag != queen:
-            squares.append( square_diag )
-            square_diag = self.move_diagonal_right(square_diag)
-        # Block the left diagonal
-        square_diag = self.move_diagonal_left(queen)
-        while square_diag != queen:
-            squares.append( square_diag )
-            square_diag = self.move_diagonal_left(square_diag)
-        return set(squares)
-    
-    def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
-        """ Consider all squares for visualizations """
-        squares: list[Square] = []
-        a, b = queen
-        return set(squares)
-
-
-class Klein2_Board(Classic_Board):
-    """ Twist both fold"""
-
-    def move_right(self, square: Square) -> Square:
-        a, b = square
-        # Edge case
-        if b == (self.m - 1):
-            return (reflect(self.n, a), 0)
-        # Just move right
-        else:
-            return (a, b+1)
-
-    def move_left(self, square: Square) -> Square:
-        a, b = square
-        # Edge case
-        if b == 0:
-            return (reflect(self.n, a), self.m - 1)
-        # Just move left
-        else:
-            return (a, b-1)
-    
-    def move_up(self, square: Square) -> Square:
-        a, b = square
-        # Edge case
-        if a == (self.n - 1):
-            return (0, reflect(self.m, b))
-        # Just move up
-        else:
-            return (a + 1, b)
-
-    def move_diagonal_right(self, square: Square) -> Square:
-        " Move into the right diagonal "
-        square = self.move_right(square)
-        return self.move_up(square)
-    
-    def move_diagonal_left(self, square: Square) -> Square:
-        " Move into the left diagonal "
-        square = self.move_left(square)
-        return self.move_up(square)
-
-    def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
-        """  Compute the squares blocked by a queen in a torus """
-        squares: list[Square] = []
-        a, b = queen
-        # Block the rest of the row
-        for i in range(b+1, self.m):
-            squares.append( (a, i) )
-        # Block the reflected row
-        a_star = reflect(self.n, a)
-        for i in range(self.m):
-            squares.append( (a_star, i))
-
-        # Block the rest of the column
-        for j in range(a+1, self.n):
-            squares.append( (j, b) )
-        # Block the reflected column
-        b_star = reflect(self.m, b)
-        for j in range(self.n):
-            squares.append( (j, b_star))
-
-        # Block the rigth diagonal
-        square_diag = self.move_diagonal_right(queen)
-        while square_diag != queen:
-            squares.append( square_diag )
-            square_diag = self.move_diagonal_right(square_diag)
-        # Block the left diagonal
-        square_diag = self.move_diagonal_left(queen)
-        while square_diag != queen:
-            squares.append( square_diag )
-            square_diag = self.move_diagonal_left(square_diag)
-        return set(squares)
-    
-    def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
-        """ Consider all squares for visualizations """
-        squares: list[Square] = []
-        a, b = queen
-        return set(squares)
-
-
 class Mobius_Board(Classic_Board):
     """ Horizontal twist, no vertical fold"""
 
-    def move_right(self, square: Square) -> Square:
+    def move_right(self, square: Square) -> tuple[Square, bool]:
         a, b = square
         # Edge case
         if b == (self.m - 1):
-            return (reflect(self.n, a), 0)
+            return (reflect(self.n, a), 0), True
         # Just move right
         else:
-            return (a, b+1)
+            return (a, b+1), False
 
-    def move_left(self, square: Square) -> Square:
+    def move_left(self, square: Square) -> tuple[Square, bool]:
         a, b = square
         # Edge case
         if b == 0:
-            return (reflect(self.n, a), self.m - 1)
+            return (reflect(self.n, a), self.m - 1), True
         # Just move left
         else:
-            return (a, b-1)
+            return (a, b-1), False
+        
+    def move_up(self, square: Square) -> Square:
+        a, b = square
+        # just move up, no fold or twist
+        return (a+1, b)
+    
+    def move_down(self, square: Square) -> Square:
+        a, b = square
+        return (a-1, b)
+
+    def move_diagonal_right(self, square, move_up: bool) -> tuple[Square, bool]:
+        new_square, flipped = self.move_right(square)
+        # check new vertical orientation
+        move_up_new = not move_up if flipped else move_up
+        # move vertically (depending on twists)
+        if move_up_new:
+            new_square = self.move_up(new_square)
+        else:
+            new_square = self.move_down(new_square)
+        return new_square, move_up_new
+        
+    def move_diagonal_left(self, square, move_up: bool) -> tuple[Square, bool]:
+        new_square, flipped = self.move_left(square)
+        # check new vertical orientation
+        move_up_new = not move_up if flipped else move_up
+        # move vertically (depending on twists)
+        if move_up_new:
+            new_square = self.move_up(new_square)
+        else:
+            new_square = self.move_down(new_square)
+        return new_square, move_up_new  
+
 
     def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
         """  Compute the squares blocked by a queen in a torus """
         squares: list[Square] = []
         a, b = queen
-        # Block the rest of the row
-        for i in range(b+1, self.m):
-            squares.append( (a, i) )
+        #  row
+        for i in range(self.m):
+            if i != b:
+                squares.append( (a, i) )
+        # column
+        for j in range(self.n):
+            if j != a:
+                squares.append( (j, b) )
+
         # Block the reflected row
         a_star = reflect(self.n, a)
         for i in range(self.m):
             squares.append( (a_star, i))
 
-        # Block the rest of the column
-        for j in range(a+1, self.n):
-            squares.append( (j, b) )
-
         # Block the upper rigth diagonal
-        i, j = self.move_right(queen)
-        i += 1
-        while i < self.n:
-            squares.append( (i,j) )
-            i, j = self.move_right( (i, j) )
-            i += 1
+        move_up = True
+        square, move_up = self.move_diagonal_right(queen, move_up)
+        while (0 <= square[0] < self.n) and (square != queen):
+            squares.append( square )
+            square, move_up = self.move_diagonal_right(square, move_up)
         # Block the upper left diagonal
-        i, j = self.move_left(queen)
-        i += 1
-        while i < self.n:
-            squares.append( (i,j) )
-            i, j = self.move_left( (i, j) )
-            i += 1
+        move_up = True
+        square, move_up = self.move_diagonal_left(queen, move_up)
+        while (0 <= square[0] < self.n) and (square != queen):
+            squares.append( square )
+            square, move_up = self.move_diagonal_left(square, move_up)
 
         # Block the lower rigth diagonal
-        i, j = self.move_right(queen)
-        i -= 1
-        while i >= 0:
-            squares.append( (i,j) )
-            i, j = self.move_right( (i, j) )
-            i -= 1
+        move_up = False
+        square, move_up = self.move_diagonal_right(queen, move_up)
+        while (0 <= square[0] < self.n) and (square != queen):
+            squares.append( square )
+            square, move_up = self.move_diagonal_right(square, move_up)
         # Block the lower left diagonal
-        i, j = self.move_left(queen)
-        i -= 1
-        while i >= 0:
-            squares.append( (i,j) )
-            i, j = self.move_left( (i, j) )
-            i -= 1
+        move_up = False
+        square, move_up = self.move_diagonal_left(queen, move_up)
+        while (0 <= square[0] < self.n) and (square != queen):
+            squares.append( square )
+            square, move_up = self.move_diagonal_left(square, move_up)
         return set(squares)
     
+
     def get_all_blocked_squares_queen(self, queen: Square) -> set[Square]:
         """ Consider all squares for visualizations """
+        return self.get_blocked_squares_queen(queen)
+
+
+class Klein1_Board(Mobius_Board):
+    """ Only twist the horizontal fold"""
+
+    # update up and down (now we have a fold)
+    def move_up(self, square: Square) -> Square:
+        a, b = square
+        return ((a+1) % self.n, b)
+    def move_down(self, square: Square) -> Square:
+        a, b = square
+        return ((a-1) % self.n, b)
+
+    def get_blocked_squares_queen(self, queen: Square) -> set[Square]:
+        """  Compute the squares blocked by a queen in a torus """
         squares: list[Square] = []
         a, b = queen
-        return set(squares)
+        #  row
+        for i in range(self.m):
+            if i != b:
+                squares.append( (a, i) )
+        # column
+        for j in range(self.n):
+            if j != a:
+                squares.append( (j, b) )
 
+        # Block the reflected row
+        a_star = reflect(self.n, a)
+        for i in range(self.m):
+            squares.append( (a_star, i))
+
+        # Block the upper rigth diagonal
+        move_up = True
+        square, move_up = self.move_diagonal_right(queen, move_up)
+        while square != queen:
+            squares.append( square )
+            square, move_up = self.move_diagonal_right(square, move_up)
+        # Block the upper left diagonal
+        move_up = True
+        square, move_up = self.move_diagonal_left(queen, move_up)
+        while square != queen:
+            squares.append( square )
+            square, move_up = self.move_diagonal_left(square, move_up)
+
+        # Block the lower rigth diagonal
+        move_up = False
+        square, move_up = self.move_diagonal_right(queen, move_up)
+        while square != queen:
+            squares.append( square )
+            square, move_up = self.move_diagonal_right(square, move_up)
+        # Block the lower left diagonal
+        move_up = False
+        square, move_up = self.move_diagonal_left(queen, move_up)
+        while square != queen:
+            squares.append( square )
+            square, move_up = self.move_diagonal_left(square, move_up)
+        return set(squares)
 
 
 
@@ -389,6 +342,5 @@ class BoardMode(Enum):
     """
     Classic = Classic_Board
     Torus = Torus_Board
-    Klein1 = Klein1_Board
-    Klein2 = Klein2_Board
     Mobius = Mobius_Board
+    Klein1 = Klein1_Board
