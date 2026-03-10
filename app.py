@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import os
 import tempfile
+import random
 
 from solver.QueenSolver import QueenSolver
 from solver.Boards import BoardMode
@@ -147,9 +148,12 @@ if run_solver:
     # clean
     for key in st.session_state.keys():
         del st.session_state[key]
+     # shuffle once
+    solutions = solver.solutions
+    random.shuffle(solutions)
     # put results
     st.session_state["solver"] = solver
-    st.session_state["solutions"] = solver.solutions
+    st.session_state["solutions"] = solutions
 
 # ------------------------------------------------
 # Display solutions
